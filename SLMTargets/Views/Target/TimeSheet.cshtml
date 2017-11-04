@@ -1,0 +1,114 @@
+﻿@*@model SLMTargets.Models.TimeSheetViewModel*@
+@{
+    ViewBag.Title = "TimeSheet";
+}
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(
+        function GetList(){
+            //debugger;
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("GetList", "Target")',
+                data: { ManagerId: 4 },
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                  if (result._lstAgents != null && result._lstAgents.length > 0)
+                        {
+                            var ddl = $('#ddl_Agents');
+                            ddl.empty();
+                            optionvales = '<option value="' + 0 + '">' + "Select Agent" + '</option>';
+                            ddl.append(optionvales);
+                            $.each(result._lstAgents, function (i) {
+                                var options = '<option value="' + result._lstAgents[i].Id + '">' + result._lstAgents[i].Name + '</option>';
+                                ddl.append(options);
+                            });
+                        }
+                  if (result._lstCampaigns != null && result._lstCampaigns.length > 0)
+                  {
+                      var ddlCamp = $('#ddl_Campaigns');
+                      ddlCamp.empty();
+                      var optiondefault = '<option value="' + 0 + '">' + "Select Campaign" + '</option>';
+                      ddlCamp.append(optiondefault);
+                      $.each(result._lstCampaigns, function (i) {
+                          var options = '<option value="' + result._lstCampaigns[i].Id + '" hours="' + result._lstCampaigns[i].TargetHours + '">' + result._lstCampaigns[i].Name + '</option>';
+                          ddlCamp.append(options);
+                      });
+                  }
+                  if (result._lstActivities != null && result._lstActivities.length > 0)
+                  {
+                      var ddlActivity = $('#ddl_Activities');
+                      ddlActivity.empty();
+                      optionvalues = '<option value="' + 0 + '">' + "Select Activity" + '</option>';
+                      ddlActivity.append(optionvalues);
+                      $.each(result._lstActivities, function (i) {
+                          var options = '<option value="' + result._lstActivities[i].Id + '">' + result._lstActivities[i].Name + '</option>';
+                          ddlActivity.append(options);
+                      });
+                  }
+                },
+                error: function (response) {
+                    //debugger;
+                    alert(response.toString());
+                }
+            })
+
+            $('#ddl_Campaigns').change(function () {
+                $('#target_hours').val($(this).find(":selected").attr("hours"));
+                //var campaignshours = "selected value="+$(this).find(":selected").val() +" hours ="+ $(this).find(":selected").attr("hours");
+                //alert($(this).find(":selected").val());
+                //alert('changed');
+                //alert(campaignshours);
+            });
+        });
+
+   
+</script>
+
+
+<div>
+    <h2>TimeSheet</h2>
+    <div class="divider">
+        <label class="label label-default">Agents</label>
+        <select id="ddl_Agents"></select>
+    </div>
+    <div>
+        <label class="label label-default">Campaigns</label>
+        <select id="ddl_Campaigns"></select>
+    </div>
+    <div>
+        <label class="label label-default">Activity</label>
+        <select id="ddl_Activities"></select>
+    </div>
+    @*@Html.DropDownListFor(m => m.CampaignsList, new SelectList(Model.CampaignsList, "Value", "Text"), "Choose Campaign")
+    @Html.DropDownListFor(a => a.Agents, new SelectList(Model.Agents, "ID", "Name"), "Choose Agent")*@
+    <div>
+       
+        <div>
+            <hr />
+            <label>Actual Sales</label>
+            <input type="number" id="actual_sales" />
+            &nbsp;
+            <label>Hours</label>
+            <input type="number" id="actual_hours" />
+            &nbsp;
+            <label>Target Hours</label>
+            <input type="text" id="target_hours" />
+            <hr />
+            <input type="checkbox" id="late" value="Late" /> Late <span style="font-size:x-large">|</span>
+            <input type="checkbox" id="coaching" value="coaching" /> Coaching <span style="font-size:x-large">|</span>
+            <input type="checkbox" id="OverRide daily sales Target" value="overridesales"/> Override Daily Sales Target
+        </div>
+        <div>
+            <h3>
+                TimeSheet details
+            </h3>
+        </div>
+    </div>
+</div>
+
+
+
+
+
